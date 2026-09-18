@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سرووشتی ڕەواندز - نرخەکانی دراو</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Vazirmatn for Sorani Kurdish) -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tab-active {
+            border-bottom: 3px solid #dc2626;
+            color: #dc2626;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
+
+    <!-- Header / سەرپەڕە -->
+    <header class="bg-gradient-to-l from-red-800 to-red-600 text-white shadow-md p-4 sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+                    <i class="fas fa-coins text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">سرووشتی ڕەواندز</h1>
+                    <span class="text-xs text-red-100 font-light">Srwshty Rawandz</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <button onclick="toggleAdminView()" id="viewToggleBtn" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-full flex items-center space-x-1 space-x-reverse transition">
+                    <i class="fas fa-eye"></i>
+                    <span id="viewModeText">دیوی بەڕێوەبەر</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-4 mt-4">
+
+        <!-- Navigation Tabs (بەشی تابەکان) -->
+        <div class="bg-white rounded-xl shadow-sm mb-4 overflow-x-auto">
+            <div class="flex border-b text-sm font-medium whitespace-nowrap px-2">
+                <button class="py-3 px-4 tab-active flex items-center space-x-2 space-x-reverse">
+                    <i class="fas fa-wallet text-red-600"></i>
+                    <span>نرخەکان</span>
+                </button>
+                <button class="py-3 px-4 text-gray-500 hover:text-gray-700 flex items-center space-x-2 space-x-reverse opacity-60 cursor-not-allowed">
+                    <i class="fas fa-clock"></i>
+                    <span>کردنەوە و داخستن</span>
+                </button>
+                <button class="py-3 px-4 text-gray-500 hover:text-gray-700 flex items-center space-x-2 space-x-reverse opacity-60 cursor-not-allowed">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>آگاداری</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Site Status Card (دۆخی ماڵپەڕ) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm mb-4 text-center border border-slate-100">
+            <div id="statusBadge" class="inline-flex items-center justify-center bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-1.5 rounded-full text-sm font-bold mb-3">
+                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse ml-2"></span>
+                <span id="statusText">سایت کراوەیە — نرخەکان دیارن</span>
+            </div>
+
+            <!-- Admin Toggle Button (تەنها لە دیوی بەڕێوەبەر دیارە) -->
+            <div id="adminControls" class="mb-3">
+                <button onclick="toggleSiteStatus()" id="toggleStatusBtn" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-xl text-sm transition">
+                    داخستنی سایت ئێستا
+                </button>
+            </div>
+
+            <!-- Live Clock (سەعات و بەروار) -->
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                <div id="clock" class="text-2xl font-black text-slate-800 tracking-wider">00:00:00</div>
+                <div id="date" class="text-xs text-slate-500 font-medium mt-1">2026-09-18 • کاتی کوردستان</div>
+            </div>
+        </div>
+
+        <!-- Currency Rates List (لیستی نرخەکان) -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-4 border-b pb-2">
+                <h2 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-money-bill-wave text-red-600"></i>
+                    نرخی دراوەکان
+                </h2>
+                <span class="text-xs text-slate-400 font-normal">نوێکراوەتەوە</span>
+            </div>
+
+            <div id="ratesContainer" class="space-y-4">
+                <!-- Currency Item (دۆلار - IQD) -->
+                <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <span class="text-2xl">🇮🇶</span>
+                            <span class="font-bold text-sm text-slate-700">دیناری عێراقی (IQD)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-3">
+                        <div class="bg-emerald-50/60 border border-emerald-100 p-2.5 rounded-lg text-center">
+                            <span class="text-xs text-slate-500 block mb-1 font-medium">کڕین</span>
+                            <input type="text" id="buy-iqd" value="158,850" class="w-full text-center bg-transparent font-bold text-emerald-700 text-lg outline-none" oninput="updateRate('iqd')">
+                        </div>
+                        <div class="bg-red-50/60 border border-red-100 p-2.5 rounded-lg text-center">
+                            <span class="text-xs text-slate-500 block mb-1 font-medium">فرۆشتن</span>
+                            <input type="text" id="sell-iqd" value="159,100" class="w-full text-center bg-transparent font-bold text-red-600 text-lg outline-none" oninput="updateRate('iqd')">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let isSiteOpen = true;
+        let isAdmin = true;
+
+        // کاتی ڕاستەوخۆ
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('clock').innerText = timeString;
+            
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('date').innerText = `${year}-${month}-${day} • کاتی کوردستان`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // گۆڕینی دۆخی سایت (داخستن / کردنەوە)
+        function toggleSiteStatus() {
+            isSiteOpen = !isSiteOpen;
+            const badge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+            const btn = document.getElementById('toggleStatusBtn');
+            const ratesContainer = document.getElementById('ratesContainer');
+
+            if (isSiteOpen) {
+                badge.className = "inline-flex items-center justify-center bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-1.5 rounded-full text-sm font-bold mb-3";
+                statusText.innerText = "سایت کراوەیە — نرخەکان دیارن";
+                btn.innerText = "داخستنی سایت ئێستا";
+                btn.className = "w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-xl text-sm transition";
+                ratesContainer.style.opacity = "1";
+            } else {
+                badge.className = "inline-flex items-center justify-center bg-rose-50 text-rose-700 border border-rose-200 px-4 py-1.5 rounded-full text-sm font-bold mb-3";
+                statusText.innerText = "سایت داخراوە — نرخەکان نوێ ناکرێنەوە";
+                btn.innerText = "کردنەوەی سایت ئێستا";
+                btn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-xl text-sm transition";
+                ratesContainer.style.opacity = "0.4";
+            }
+        }
+
+        // سوئیتچ کردنی دیوی Admin و دیوی کڕیاران
+        function toggleAdminView() {
+            isAdmin = !isAdmin;
+            const adminControls = document.getElementById('adminControls');
+            const viewModeText = document.getElementById('viewModeText');
+            const inputs = document.querySelectorAll('input');
+
+            if (isAdmin) {
+                adminControls.style.display = 'block';
+                viewModeText.innerText = "دیوی بەڕێوەبەر";
+                inputs.forEach(input => input.removeAttribute('readonly'));
+            } else {
+                adminControls.style.display = 'none';
+                viewModeText.innerText = "دیوی کڕیار (پیشاندان)";
+                inputs.forEach(input => input.setAttribute('readonly', true));
+            }
+        }
+    </script>
+</body>
+</html>
